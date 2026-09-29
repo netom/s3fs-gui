@@ -73,15 +73,15 @@ class Handler:
 
             p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
 
-            unset(os.environ['AWSACCESSKEYID'])
-            unset(os.environ['AWSSECRETACCESSKEY'])
+            del(os.environ['AWSACCESSKEYID'])
+            del(os.environ['AWSSECRETACCESSKEY'])
 
             (output, err) = p.communicate()
             p_status = p.wait()
             if p_status == 0:
-                status_msg =  lang["msg_mounted"]
+                status_msg = lang["msg_mounted"]
             else:
-                status_msg = output
+                status_msg = output.decode('utf-8')
         else:
             status_msg = lang["msg_no_selection"]
 
