@@ -64,15 +64,17 @@ class Handler:
             if not os.path.exists(mountBucketPoint):
                 os.mkdir(mountBucketPoint)
 
-            env = os.environ
-            env['AWSACCESSKEYID'] = row[3]
-            env['AWSSECRETACCESSKEY'] = row[4]
+            os.environ['AWSACCESSKEYID'] = row[3]
+            os.environ['AWSSECRETACCESSKEY'] = row[4]
 
             command = \
                 f"s3fs {row[1]} {mountBucketPoint} -o url={row[2]} " + \
                 f"-o use_path_request_style -o use_cache=/tmp"
 
             p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+
+            unset(os.environ['AWSACCESSKEYID'])
+            unset(os.environ['AWSSECRETACCESSKEY'])
 
             (output, err) = p.communicate()
             p_status = p.wait()
