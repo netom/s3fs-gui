@@ -22,8 +22,11 @@ default_lang = "en"
 # Mount point is a subfoldser of $HOME user
 mountPoint = os.path.join(os.environ['HOME'], mountFolder)
 builder = Gtk.Builder()
+
 conn = sqlite3.connect('res/db.sqlite')
 cursor = conn.cursor()
+cursor.execute(open('res/sql.sql').read())
+
 select_bucket = ""
 lang = ""
 
