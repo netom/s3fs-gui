@@ -92,22 +92,17 @@ class Handler:
         bucket = int(select_bucket.get_active_id())
 
         if bucket > 0:
-            filename = os.path.join(os.environ['HOME'], "."+select_bucket.get_active_text()+"-s3fs")
-
             mountBucketPoint = os.path.join(mountPoint, select_bucket.get_active_text())
             p = subprocess.Popen("fusermount -u "+mountBucketPoint, stdout=subprocess.PIPE, shell=True)
             (output, err) = p.communicate()
             p_status = p.wait()
             if p_status == 0:
-                status_msg =  lang["msg_unmounted"]
+                status_msg = lang["msg_unmounted"]
             else:
                 status_msg = output.decode('utf-8')
 
             set_status(status_msg)
             print(status_msg)
-
-            if os.path.exists(filename):
-                os.remove(filename)
 
     def load_bucket_data(self):
         bucket = int(select_bucket.get_active_id() or 0)
