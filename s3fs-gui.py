@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+
 import gi
 import os
 import subprocess
@@ -11,6 +11,7 @@ from os import path
 from threading import Timer
 
 gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, Pango
 
 # CONFIG
@@ -90,7 +91,6 @@ class Handler:
 
         if bucket > 0:
             filename = os.path.join(os.environ['HOME'], "."+select_bucket.get_active_text()+"-s3fs")
-            #print(filename)
 
             mountBucketPoint = os.path.join(mountPoint, select_bucket.get_active_text())
             p = subprocess.Popen("fusermount -u "+mountBucketPoint, stdout=subprocess.PIPE, shell=True)
@@ -134,7 +134,7 @@ class Handler:
         if host != "" and key != "" and secret != "" and bucket != "" :
             results = cursor.execute("SELECT COUNT(id), * FROM buckets WHERE bucket = ? ",(bucket,)).fetchone()
             count = results[0]
-            #print(count)
+
             if count == 0:
                 cursor.execute("INSERT INTO buckets (bucket, host, key, secret) VALUES (?, ? , ? ,?) ",(bucket, host, key, secret))
                 status_msg = lang["msg_created"]
@@ -142,6 +142,7 @@ class Handler:
                 bucket_id = results[1]
                 cursor.execute("UPDATE buckets SET bucket = ?, host = ?, key = ?, secret = ? WHERE id = ?",(bucket, host, key, secret, bucket_id))
                 status_msg = lang["msg_updated"]
+
             conn.commit()
 
             set_status(status_msg)
@@ -200,10 +201,23 @@ def create_select_bucket():
     select_bucket.set_active_id("0")
 
 def set_labels():
+    css_provider = Gtk.CssProvider()
+    css_provider.load_from_data(b"* { font-family: Sans; font-size: 12pt; }")
+
     builder.get_object("window1").set_title(lang["title"])
-    builder.get_object("key").modify_font(Pango.FontDescription('Sans 12'))
-    builder.get_object("host").modify_font(Pango.FontDescription('Sans 12'))
-    builder.get_object("bucket").modify_font(Pango.FontDescription('Sans 12'))
+    
+    widget = builder.get_object("key")
+    context = widget.get_style_context()
+    context.add_provider(css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+    widget = builder.get_object("host")
+    context = widget.get_style_context()
+    context.add_provider(css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+    widget = builder.get_object("bucket")
+    context = widget.get_style_context()
+    context.add_provider(css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
     builder.get_object("mount").set_label(lang["mount_bucket"])
     builder.get_object("unmount").set_label(lang["unmount_bucket"])
     builder.get_object("lbl_host").set_label(lang["hostname"]+":")
