@@ -17,6 +17,8 @@ Icons from [iconarchive.com](http://www.iconarchive.com/)
 
 ## Installing dependencies
 
+See https://pygobject.gnome.org/devguide/dev_environ.html
+
 ### Ubuntu
 
 ```
@@ -32,4 +34,14 @@ sudo apt-get install -y gobject-introspection libgirepository-2.0-dev \
 ```
 brew update
 brew install python3 gobject-introspection libffi
+```
+
+### windows
+
+**UNTESTED**
+
+```
+pacman -S --needed --noconfirm base-devel mingw-w64-ucrt-x86_64-toolchain git \
+   mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-pycairo \
+   mingw-w64-ucrt-x86_64-gobject-introspection mingw-w64-ucrt-x86_64-libffi
 ```
