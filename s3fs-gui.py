@@ -70,8 +70,9 @@ class Handler:
             subprocess.Popen("chmod 600 ${HOME}/."+row[1]+"-s3fs", stdout=subprocess.PIPE, shell=True)
 
             command = "s3fs "+row[1]+" "+mountBucketPoint+" -o passwd_file="+filename+" -o url="+row[2]+" -o use_path_request_style -o use_cache=/tmp"
-            #print(command)
+
             p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+
             (output, err) = p.communicate()
             p_status = p.wait()
             if p_status == 0:
