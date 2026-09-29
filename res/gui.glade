@@ -169,26 +169,9 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="edit">
-            <property name="label">gtk-edit</property>
-            <property name="width-request">82</property>
-            <property name="height-request">35</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="use-stock">True</property>
-            <property name="always-show-image">True</property>
-            <signal name="clicked" handler="on_edit_clicked" swapped="no"/>
-          </object>
-          <packing>
-            <property name="x">312</property>
-            <property name="y">18</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkButton" id="delete">
             <property name="label">gtk-delete</property>
-            <property name="width-request">80</property>
+            <property name="width-request">194</property>
             <property name="height-request">35</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
@@ -198,7 +181,7 @@
             <signal name="clicked" handler="on_delete_clicked" swapped="no"/>
           </object>
           <packing>
-            <property name="x">431</property>
+            <property name="x">317</property>
             <property name="y">18</property>
           </packing>
         </child>

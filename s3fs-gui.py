@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 import gi
-import os
-import subprocess
-import sqlite3
 import json
 import locale
+import os
+import sqlite3
+import subprocess
 
-from os import path
 from threading import Timer
 
 gi.require_version('Gtk', '3.0')
@@ -36,7 +35,7 @@ def main():
     global lang
     global select_bucket
     lang = json.loads(get_language())
-    if not path.exists(mountPoint):
+    if not os.path.exists(mountPoint):
         os.mkdir(mountPoint)
 
     builder.add_from_file("res/gui.glade")
@@ -62,15 +61,16 @@ class Handler:
             row = cursor.fetchone()
 
             mountBucketPoint = os.path.join(mountPoint, row[1])
-            if not path.exists(mountBucketPoint):
+            if not os.path.exists(mountBucketPoint):
                 os.mkdir(mountBucketPoint)
 
-            filename = os.path.join(os.environ['HOME'], "."+row[1]+"-s3fs")
+            env = os.environ
+            env['AWSACCESSKEYID'] = row[3]
+            env['AWSSECRETACCESSKEY'] = row[4]
 
-            subprocess.Popen("echo "+row[3]+":"+row[4]+" > ${HOME}/."+row[1]+"-s3fs", stdout=subprocess.PIPE, shell=True)
-            subprocess.Popen("chmod 600 ${HOME}/."+row[1]+"-s3fs", stdout=subprocess.PIPE, shell=True)
-
-            command = "s3fs "+row[1]+" "+mountBucketPoint+" -o passwd_file="+filename+" -o url="+row[2]+" -o use_path_request_style -o use_cache=/tmp"
+            command = \
+                f"s3fs {row[1]} {mountBucketPoint} -o url={row[2]} " + \
+                f"-o use_path_request_style -o use_cache=/tmp"
 
             p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
 
@@ -99,7 +99,7 @@ class Handler:
             if p_status == 0:
                 status_msg =  lang["msg_unmounted"]
             else:
-                status_msg = output
+                status_msg = output.decode('utf-8')
 
             set_status(status_msg)
             print(status_msg)
@@ -107,14 +107,8 @@ class Handler:
             if os.path.exists(filename):
                 os.remove(filename)
 
-    def on_select_bucket_changed(self, select_bucket):
-        builder.get_object("host").set_text("")
-        builder.get_object("key").set_text("")
-        builder.get_object("secret").set_text("")
-        builder.get_object("bucket").set_text("")
-
-    def on_edit_clicked(self, button):
-        bucket = int(select_bucket.get_active_id())
+    def load_bucket_data(self):
+        bucket = int(select_bucket.get_active_id() or 0)
 
         if bucket > 0:
             cursor.execute("SELECT * FROM buckets WHERE id = ? ",(bucket,))
@@ -124,6 +118,14 @@ class Handler:
             builder.get_object("key").set_text(row[3])
             builder.get_object("secret").set_text(row[4])
             builder.get_object("bucket").set_text(row[1])
+        else:
+            builder.get_object("host").set_text("")
+            builder.get_object("key").set_text("")
+            builder.get_object("secret").set_text("")
+            builder.get_object("bucket").set_text("")
+
+    def on_select_bucket_changed(self, select_bucket):
+        self.load_bucket_data()
 
     def on_save_clicked(self, button):
         host = builder.get_object("host").get_text()
